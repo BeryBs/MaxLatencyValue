@@ -70,7 +70,7 @@ for i in range(1, len(array)):
 print ("\nDifference list=> ", str(diff_list))
 
 
-#Search for largest element
+#En buyuk elemanı ara
 largest_number = diff_list[0] 
 for number in diff_list:
     if number > largest_number:
@@ -80,7 +80,7 @@ print('\nLargest latency value is: ',largest_number) #20.deger geliyor  ->> 19 v
 
 
 #Search algoritmasiyla ilk listede farki largest_number gelen degerin koordinatlarini çek
-#Print the index of coordinate
+#Koordinatları ekrana yazdır
 
 
 new_df = np.array(df) #numpy float 64 arrayini int arraye çevir
@@ -91,14 +91,14 @@ new_df = np.asarray(new_df)
 def PairsWithDiffK(df,p,largest_number):
     count = 0
      
-    # Pick all elements one by one
+    #Tum elemanları teker teker sec
     for i in  range(0,len(df)):
          
-        # See if there is a pair of this picked element
+        #Secılen eleman cıftı ıcerıde varmı dıye bak
         for j in range(i+1,p):
              
             if ((df['data'][i] - df['data'][j]== largest_number) or (df['data'][j] - df['data'][i] == largest_number)):
                 print('Coordinates of the max latency value is: ',df['data'][i],df['data'][j])
                  
  
-PairsWithDiffK(df, len(df), largest_number)
+PairsWithDiffK(df, len(df), largest_number) #var ise ekrana koordinatları yaz
