@@ -1,0 +1,95 @@
+from math import nan
+import collections
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.signal import argrelextrema
+
+# Noisy içeren rastgele sample'lar üret
+
+np.random.seed(0)
+rs = np.random.randn(200) #x dogrultusunda(time) 200'e kadar git.
+xs = [0] #first element
+for r in rs: 
+    xs.append(xs[-1] * 0.9 + r) #ilk elemani 0.9 ile çarpip 1 ekleyerek y dogrultusunda degerler üret.
+df = pd.DataFrame(xs, columns=['data'])
+
+n = 5  # Önce ve sonrasinda kontrol edilecek nokta sayisi
+
+# Local peak degerlerini bul
+df['min'] = df.data[(df.data.shift(1) > df.data) & (df.data.shift(-1) > df.data)]
+df['max'] = df.data[(df.data.shift(1) < df.data) & (df.data.shift(-1) < df.data)]
+
+# Sonuçlari çiz
+
+plt.scatter(df.index, df['min'], c='r')
+plt.scatter(df.index, df['max'], c='g')
+plt.plot(df.index, df['data'])
+plt.show()
+
+print ("\nLength of min values are => ",  len( df['min']))
+print ("\nLength of max values are => ",  len( df['max']))
+
+if len( df['min']) > len( df['max']):
+   newLen = len( df['min'])
+else:
+   newLen = len( df['max']) 
+#Ard arda gelen Local min ve local maxin arasindaki en cok x degerini bul
+new_list = []
+a_list = list(range(5000))
+#Bulunan min ve max peak degerlerini ard arda ekle ve yeni bir liste olarak kaydet
+for i in range(1, newLen):
+    new_list.append((df['min'][i]))
+    new_list.append((df['max'][i]))
+
+
+array = np.array(new_list)
+# first get the indices where the values are finite
+ii = np.isfinite(array)
+
+# second get the values
+array = array[ii]
+
+print ("\nAll min and max peak values=> ", array)
+
+diff_list = []
+#Calculate difference between adjecent elements in list 
+for i in range(1, len(array)):
+    diff_list.append(abs(float(array[i]) - float(array[i-1])))
+
+#Print the Difference List
+print ("\nDifference list=> ", str(diff_list))
+
+
+#Search for largest element
+largest_number = diff_list[0] 
+for number in diff_list:
+    if number > largest_number:
+        largest_number = number
+
+print('\nLargest latency value is: ',largest_number) #20.deger geliyor  ->> 19 ve 20 nin koordinatlarinin gelmesi gerekiyor
+
+
+#Search algoritmasiyla ilk listede farki largest_number gelen degerin koordinatlarini çek
+#Print the index of coordinate
+
+
+new_df = np.array(df) #numpy float 64 arrayini int arraye çevir
+new_df = tuple(new_df) # numpy.ndarray tipini hassable degere çevir
+new_df = np.asarray(new_df)
+
+
+def PairsWithDiffK(df,p,largest_number):
+    count = 0
+     
+    # Pick all elements one by one
+    for i in  range(0,len(df)):
+         
+        # See if there is a pair of this picked element
+        for j in range(i+1,p):
+             
+            if ((df['data'][i] - df['data'][j]== largest_number) or (df['data'][j] - df['data'][i] == largest_number)):
+                print('Coordinates of the max latency value is: ',df['data'][i],df['data'][j])
+                 
+ 
+PairsWithDiffK(df, len(df), largest_number)
